@@ -12,6 +12,8 @@
 
 #define MAX_SSID_LEN 32
 
+#define WEXT_CSCAN_AMOUNT               9
+
 #define MAX_DRV_CMD_SIZE		248
 #define DRV_NUMBER_SEQUENTIAL_ERRORS	4
 

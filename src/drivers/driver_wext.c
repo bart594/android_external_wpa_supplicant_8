@@ -31,6 +31,11 @@
 #include "driver.h"
 #include "driver_wext.h"
 
+extern int wpa_driver_wext_combo_scan(void *priv,struct wpa_driver_scan_params *params);
+extern int wpa_driver_wext_driver_cmd(void *priv, char *cmd, char *buf, size_t buf_len);
+extern int wpa_driver_signal_poll(void *priv, struct wpa_signal_info *si);
+
+
 static int wpa_driver_wext_flush_pmkid(void *priv);
 static int wpa_driver_wext_get_range(void *priv);
 static int wpa_driver_wext_finish_drv_init(struct wpa_driver_wext_data *drv);
@@ -1006,6 +1011,11 @@ int wpa_driver_wext_scan(void *priv, struct wpa_driver_scan_params *params)
 	const u8 *ssid = params->ssids[0].ssid;
 	size_t ssid_len = params->ssids[0].ssid_len;
 
+	if (drv->capa.max_scan_ssids > 1) {
+		ret = wpa_driver_wext_combo_scan(priv, params);
+		goto scan_out;
+	}
+
 	if (ssid_len > IW_ESSID_MAX_SIZE) {
 		wpa_printf(MSG_DEBUG, "%s: too long SSID (%lu)",
 			   __FUNCTION__, (unsigned long) ssid_len);
@@ -1033,6 +1043,7 @@ int wpa_driver_wext_scan(void *priv, struct wpa_driver_scan_params *params)
 
 	/* Not all drivers generate "scan completed" wireless event, so try to
 	 * read results after a timeout. */
+	scan_out:
 	timeout = 10;
 	if (drv->scan_complete_events) {
 		/*
@@ -1565,7 +1576,7 @@ static int wpa_driver_wext_get_range(void *priv)
 		drv->capa.auth = WPA_DRIVER_AUTH_OPEN |
 			WPA_DRIVER_AUTH_SHARED |
 			WPA_DRIVER_AUTH_LEAP;
-		drv->capa.max_scan_ssids = 1;
+		drv->capa.max_scan_ssids = WEXT_CSCAN_AMOUNT;
 
 		wpa_printf(MSG_DEBUG, "  capabilities: key_mgmt 0x%x enc 0x%x "
 			   "flags 0x%x",
@@ -2371,4 +2382,5 @@ const struct wpa_driver_ops wpa_driver_wext_ops = {
 	.set_operstate = wpa_driver_wext_set_operstate,
 	.get_radio_name = wext_get_radio_name,
 	.signal_poll = wpa_driver_wext_signal_poll,
+	.driver_cmd = wpa_driver_wext_driver_cmd,
 };

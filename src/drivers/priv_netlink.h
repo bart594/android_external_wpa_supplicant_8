@@ -8,7 +8,7 @@
 
 #ifndef PRIV_NETLINK_H
 #define PRIV_NETLINK_H
-
+#include "linux/netlink.h"; 
 /*
  * This should be replaced with user space header once one is available with C
  * library, etc..
@@ -44,7 +44,6 @@
 #define RTM_NEWLINK (RTM_BASE + 0)
 #define RTM_DELLINK (RTM_BASE + 1)
 #define RTM_SETLINK (RTM_BASE + 3)
-
 #define NLMSG_ALIGNTO 4
 #define NLMSG_ALIGN(len) (((len) + NLMSG_ALIGNTO - 1) & ~(NLMSG_ALIGNTO - 1))
 #define NLMSG_HDRLEN ((int) NLMSG_ALIGN(sizeof(struct nlmsghdr)))
@@ -69,10 +68,10 @@
 (struct rtattr *) (((char *)(rta)) + RTA_ALIGN((rta)->rta_len)))
 #define RTA_LENGTH(len) (RTA_ALIGN(sizeof(struct rtattr)) + (len))
 #define RTA_DATA(rta) ((void *) (((char *) (rta)) + RTA_LENGTH(0)))
-#define RTA_PAYLOAD(rta) ((int) ((rta)->rta_len) - RTA_LENGTH(0))
 
 
-struct sockaddr_nl
+
+/*struct sockaddr_nl
 {
 	sa_family_t nl_family;
 	unsigned short nl_pad;
@@ -88,7 +87,7 @@ struct nlmsghdr
 	u32 nlmsg_seq;
 	u32 nlmsg_pid;
 };
-
+*/
 struct ifinfomsg
 {
 	unsigned char ifi_family;

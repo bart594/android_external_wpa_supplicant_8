@@ -681,6 +681,9 @@ void wpa_supplicant_set_state(struct wpa_supplicant *wpa_s,
 		wpa_supplicant_state_txt(wpa_s->wpa_state),
 		wpa_supplicant_state_txt(state));
 
+	if(state == WPA_ASSOCIATED || (state <= WPA_INACTIVE))
+		wpa_s->assoc_retries = 0;
+		
 	if (state == WPA_INTERFACE_DISABLED) {
 		/* Assure normal scan when interface is restored */
 		wpa_s->normal_scans = 0;
